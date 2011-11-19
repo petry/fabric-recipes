@@ -1,0 +1,22 @@
+# Copyright (C) 2010 Arthur Furlan <afurlan@afurlan.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# On Debian systems, you can find the full text of the license in
+# /usr/share/common-licenses/GPL-2
+
+
+#
+# Configuration file for "gunicorn_django" initscript
+#
+
+# Project root directory (contains the manage.py file)
+ROOTDIR="%(server_project_dir)s%(project_name)s"
+
+# Daemon configuration
+DAEMON_PATH="%(enviroment_dir)sbin/gunicorn_django"
+DAEMON_ARGS="--workers=2 -b 127.0.0.1:%(gunicorn_port)s -n %(project_name)s --debug"
+RUN_AS="%(user)s"
