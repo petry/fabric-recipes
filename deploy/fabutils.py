@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from fabric.context_managers import settings
 from fabric.api import env, run, sudo
+from fabric.api import puts as fabric_puts
 
 class Print:
     colors = {
@@ -20,7 +21,7 @@ class Print:
 
 
 def puts(msg):
-    fabric_put( Print.text(msg, 'blue') )
+    fabric_puts( Print.text(msg, 'blue') )
 
 def install_packages(packages):
     with settings(warn_only=True):
