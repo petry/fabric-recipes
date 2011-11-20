@@ -1,10 +1,9 @@
-from fabric.contrib import files
-from fabric.operations import run
 import os
-from fabric.api import env, local, sudo, prompt
-from fabutils import install_packages, restart_service, new_user, \
-    server_upgrade, create_directories, puts
-
+from fabric.contrib import files
+from fabric.decorators import task
+from fabric.operations import run
+from fabric.api import env, local, sudo
+from fabutils import install_packages, restart_service, server_upgrade, create_directories, puts
 
 env.project_name = "project"
 env.project_dir = os.path.realpath(os.path.join(os.path.dirname(env.real_fabfile), ".."))
@@ -96,6 +95,7 @@ def gunicorn_deploy():
 
     sudo('/etc/init.d/gunicorn_django restart %s' % env.project_name, pty=False)
 
+@task
 def deploy():
     puts("Deploying Project...")
     nginx_server_project_configuration()
@@ -104,6 +104,7 @@ def deploy():
     upload_project()
     gunicorn_deploy()
 
+@task
 def setup():
     server_upgrade()
     nginx_setup()
