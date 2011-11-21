@@ -1,4 +1,4 @@
-Django fabric é uma solução rápida para realizar o deploy de uma aplicaçao django utilizando nginx e gunicorn
+Django fabric is a quick solution to perform deploy a Django app using nginx and gunicorn
 
 How to Use:
 -----------
