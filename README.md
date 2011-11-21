@@ -7,7 +7,7 @@ First, change the Variables env.user env.password on deploy/fabfile.py deploy,
 
 Just run
 
-    fab setup.
+    fab setup
 
 Fab setup will update the system, install nginx, python dependencies of the project,
 and the application that is in repository.
