@@ -17,49 +17,52 @@ env.server_project_dir = '/srv/%s/' % env.project_name
 env.server_home_dir = '/home/%s/' % env.server_user
 env.enviroment_dir = '%senviroment/' % env.server_home_dir
 
-env.gunicorn_port = '8081'
 
-
-def nginx_server_base_configuration():
+def nginx_server_base_configuration(project_dir):
     puts('adding HTTP Server config files for project')
-    files.upload_template("%s/deploy/nginx/server.conf" % env.project_dir,
+    files.upload_template("%s/deploy/nginx/server.conf" % project_dir,
                           "/etc/nginx/nginx.conf",
                           use_sudo=True)
     restart_service('nginx')
 
-def nginx_setup():
+
+def nginx_setup(project_dir):
     puts('installing NGINX')
     install_packages([
         'nginx',
     ])
-    nginx_server_base_configuration()
+    nginx_server_base_configuration(project_dir)
 
-def nginx_server_project_configuration():
+
+def nginx_server_project_configuration(project_dir, project_name):
     puts('adding HTTP Server config files')
 
     sudo("rm -f /etc/nginx/sites-enabled/default")
-    sudo("rm -f /etc/nginx/sites-enabled/%s" % env.project_name)
+    sudo("rm -f /etc/nginx/sites-enabled/%s" % project_name)
 
-    files.upload_template("%s/deploy/nginx/site.conf" % env.project_dir,
-                          "/etc/nginx/sites-enabled/%s.conf" % env.project_name,
+    files.upload_template("%s/deploy/nginx/site.conf" % project_dir,
+                          "/etc/nginx/sites-enabled/%s.conf" % project_name,
                           context=env,
                           use_sudo=True)
     restart_service('nginx')
 
-def gunicorn_setup():
+
+def gunicorn_setup(project_dir):
     puts('Add Gunicorn init script')
-    files.upload_template("%s/deploy/gunicorn/gunicorn_django_server" % env.project_dir,
+    files.upload_template("%s/deploy/gunicorn/gunicorn_django_server" % project_dir,
                           "/etc/init.d/gunicorn_django",
                           use_sudo=True)
     sudo('chmod +x /etc/init.d/gunicorn_django')
 
-def install_pip_dependancies():
-    puts('install pip dependaecies')
-    requirements = open('%s/requirements.txt' % env.project_dir, 'r')
-    for module in requirements.readlines():
-        run('%sbin/pip install %s' % (env.enviroment_dir, module))
 
-def upload_project():
+def install_pip_dependancies(project_dir, enviroment_dir):
+    puts('install pip dependaecies')
+    requirements = open('%s/requirements.txt' % project_dir, 'r')
+    for module in requirements.readlines():
+        run('%sbin/pip install %s' % (enviroment_dir, module))
+
+
+def upload_project(project_name):
     git_url = local('git config --get remote.origin.url', capture=True)
 
     puts('cloning repository')
@@ -68,45 +71,57 @@ def upload_project():
 
     puts('uploading project files')
     local('cd /tmp/git_repository && tar -zcvf /tmp/%(project_name)s.tar %(project_name)s' % env)
-    files.upload_template("/tmp/%s.tar" % env.project_name,
+    files.upload_template("/tmp/%s.tar" % project_name,
                           "%(server_project_dir)s%(project_name)s.tar" % env)
     run('tar -zxvf %(server_project_dir)s%(project_name)s.tar -C %(server_project_dir)s' % env)
 
-def python_install_virtualenv():
-    install_packages([
-        'python-virtualenv',
-        ])
-    create_directories(env.server_project_dir, env.server_user, '0750')
-    if not files.exists("%sbin/activate" % env.enviroment_dir):
-        run("virtualenv --distribute --no-site-packages %s" % env.enviroment_dir)
 
-def python_enviroment():
+def python_install_virtualenv(server_project_dir, server_user, enviroment_dir):
+    install_packages(
+        [
+            'python-virtualenv'
+        ]
+    )
+    create_directories(server_project_dir, server_user, '0750')
+    if not files.exists("%sbin/activate" % enviroment_dir):
+        run("virtualenv --distribute --no-site-packages %s" % enviroment_dir)
+
+
+def python_enviroment(project_dir, server_project_dir, server_user, enviroment_dir):
     puts('base python libs for system')
-    python_install_virtualenv()
+    python_install_virtualenv(
+        server_project_dir=server_project_dir,
+        server_user=server_user,
+        enviroment_dir=enviroment_dir)
 
-    install_pip_dependancies()
+    install_pip_dependancies(project_dir=project_dir)
 
-def gunicorn_deploy():
+
+def gunicorn_deploy(project_dir, project_name):
     puts('transferring gunicorn configurarion and restart')
-    files.upload_template("%s/deploy/gunicorn/gunicorn_django_site" % env.project_dir,
-                          "/etc/default/gunicorn_django-%s" % env.project_name,
+    files.upload_template("%s/deploy/gunicorn/gunicorn_django_site" % project_dir,
+                          "/etc/default/gunicorn_django-%s" % project_name,
                           context=env,
                           use_sudo=True)
 
-    sudo('/etc/init.d/gunicorn_django restart %s' % env.project_name, pty=False)
+    sudo('/etc/init.d/gunicorn_django restart %s' % project_name, pty=False)
+
 
 @task
 def deploy():
     puts("Deploying Project...")
-    nginx_server_project_configuration()
+    nginx_server_project_configuration(
+        project_dir=env.project_dir,
+        project_name=env.project_name)
 
-    python_enviroment()
-    upload_project()
-    gunicorn_deploy()
+    python_enviroment(project_dir=env.project_dir)
+    upload_project(project_name=env.project_name)
+    gunicorn_deploy(project_dir=env.project_dir, project_name=env.project_name)
+
 
 @task
 def setup():
     server_upgrade()
-    nginx_setup()
-    gunicorn_setup()
+    nginx_setup(project_dir=env.project_dir)
+    gunicorn_setup(project_dir=env.project_dir)
     deploy()
