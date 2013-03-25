@@ -1,7 +1,7 @@
 import os
 from fabric.decorators import task
 from fabric.api import env
-from deploy.functions import gunicorn_setup, nginx_setup, gunicorn_deploy, upload_project, python_enviroment, nginx_server_project_configuration
+from fabricdeploy.functions import gunicorn_setup, nginx_setup, gunicorn_deploy, upload_project, python_enviroment, nginx_server_project_configuration
 from fabutils import server_upgrade, puts
 
 env.project_name = "project"
