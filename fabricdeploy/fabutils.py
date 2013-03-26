@@ -5,8 +5,15 @@ from fabric.api import puts as fabric_puts
 from fabric import colors
 
 
-def puts(msg):
-    fabric_puts(colors.blue(msg))
+def puts(msg, type='info'):
+    messages_by_type = {
+        'info': colors.blue(msg),
+        'success': colors.green(msg),
+        'warn': colors.yellow(msg),
+        'error': colors.red(msg)
+    }
+
+    fabric_puts(messages_by_type[type])
 
 
 def install_packages(packages):

@@ -83,7 +83,7 @@ def install_pip_dependancies():
 
 
 def collect_static():
-    run('.{0}/manage.py collectstatic --noinput'.format(env.release_path))
+    run('{0}/bin/python {1}/manage.py collectstatic --noinput'.format(env.remote_virtualenv_path, env.release_path))
 
 
 def gunicorn_deploy(gunicorn_project_config_file):
