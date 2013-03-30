@@ -25,7 +25,7 @@ def server_upgrade():
     puts('updating server')
     with settings(warn_only=True):
         sudo("aptitude -y update")
-        sudo("aptitude -y upgrade")
+        # sudo("aptitude -y upgrade")
 
 
 def restart_service(service):
