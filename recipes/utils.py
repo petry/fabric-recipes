@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+from fabric.colors import red
 from fabric.context_managers import settings
 from fabric.api import sudo
 from fabric.api import puts as fabric_puts
 from fabric import colors
+from fabric.state import env
+from fabric.utils import error
 
 
 def puts(msg, type='info'):
@@ -39,3 +42,16 @@ def create_directories(path, user, permission, group=None):
     sudo("mkdir -p %s" % path)
     sudo("chown %s:%s %s" % (user, group, path))
     sudo("chmod %s %s" % (permission, path))
+
+
+def required_envs(env_list=[]):
+    missing = []
+    for var in env_list:
+        if not env.has_key(var):
+           missing.append(var)
+    if missing:
+        message = "\nYou forgot to set some variables to deploy:\n"
+        for var in missing:
+            message += " - {0}\n".format(var)
+
+        error(red(message))

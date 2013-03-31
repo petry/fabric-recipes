@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from fabric.api import env
 from fabric.operations import run
-from recipes.utils import server_upgrade, puts, install_packages
+from recipes.utils import server_upgrade, puts, install_packages, required_envs
 from recipes.gunicorn import gunicorn_deploy, gunicorn_setup
 from recipes.nginx import nginx_setup_server, nginx_setup_site
 from recipes.project import create_folder_for_project, upload_project, install_pip_dependancies, python_enviroment
@@ -11,6 +11,10 @@ from recipes.project import create_folder_for_project, upload_project, install_p
 class DjangoDeploy(object):
 
     def __init__(self):
+        required_envs([
+            'remote_virtualenv_path',
+            'release_path'
+        ])
         super(DjangoDeploy, self).__init__()
 
     def setup(self):

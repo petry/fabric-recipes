@@ -1,3 +1,4 @@
 .idea/
 fabric_django.egg-info/
 *.pyc
+.vagrant
