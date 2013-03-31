@@ -8,7 +8,7 @@ from fabric.state import env
 from fabric.utils import error
 
 
-def puts(msg, type='info'):
+def puts(msg, m_type='info'):
     messages_by_type = {
         'info': colors.blue(msg),
         'success': colors.green(msg),
@@ -16,7 +16,7 @@ def puts(msg, type='info'):
         'error': colors.red(msg)
     }
 
-    fabric_puts(messages_by_type[type])
+    fabric_puts(messages_by_type[m_type])
 
 
 def install_packages(packages):
@@ -44,11 +44,11 @@ def create_directories(path, user, permission, group=None):
     sudo("chmod %s %s" % (permission, path))
 
 
-def required_envs(env_list=[]):
+def required_envs(env_list):
     missing = []
     for var in env_list:
-        if not env.has_key(var):
-           missing.append(var)
+        if var not in env.keys():
+            missing.append(var)
     if missing:
         message = "\nYou forgot to set some variables to deploy:\n"
         for var in missing:
