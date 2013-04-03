@@ -3,7 +3,7 @@
 #
 
 # Project root directory (contains the manage.py file)
-ROOTDIR="%(release_path)s"
+ROOTDIR="%(remote_current_path)s"
 
 # Daemon configuration
 DAEMON_PATH="%(remote_virtualenv_path)s/bin/gunicorn_django"

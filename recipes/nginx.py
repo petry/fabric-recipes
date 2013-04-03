@@ -5,6 +5,7 @@ from fabric.contrib import files
 from fabric.operations import sudo
 from fabric.state import env
 from recipes import scripts
+from recipes.gunicorn import GunicornDeploy
 from recipes.utils import puts, install_packages, restart_service, required_envs
 
 
@@ -14,13 +15,18 @@ class NginxDeploy(object):
         super(NginxDeploy, self).__init__()
         required_envs([
             'project_name',
+            'project_domain',
+            'gunicorn_port'
         ]
         )
+        self.gunicorn = GunicornDeploy(release_path=env.remote_release_path)
 
     def setup_server(self, config_file=None):
+        self.gunicorn.setup()
+
+        puts('installing NGINX')
         if not config_file:
             config_file = os.path.join(scripts.__path__[0], 'nginx_server.conf')
-        puts('installing NGINX')
         install_packages([
             'nginx',
         ])
@@ -31,6 +37,8 @@ class NginxDeploy(object):
         restart_service('nginx')
 
     def setup_site(self, config_file=None):
+        self.gunicorn.deploy()
+
         if not config_file:
             config_file = os.path.join(scripts.__path__[0], 'nginx_site.conf')
         puts('adding HTTP Server config files')

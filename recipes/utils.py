@@ -8,6 +8,7 @@ from fabric.state import env
 from fabric.utils import error
 
 
+
 def puts(msg, m_type='info'):
     messages_by_type = {
         'info': colors.blue(msg),
