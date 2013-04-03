@@ -41,3 +41,6 @@ class DjangoDeploy(object):
         puts("Collecting static files")
         run('{0}/bin/python {1}/manage.py collectstatic --noinput'.format(env.remote_virtualenv_path,
                                                                           env.remote_current_path))
+
+    def status(self):
+        self.nginx.status()

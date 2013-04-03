@@ -5,7 +5,7 @@ from fabric.contrib import files
 from fabric.operations import sudo
 from fabric.state import env
 from recipes import scripts
-from recipes.utils import puts, required_envs
+from recipes.utils import puts, required_envs, http_status
 
 
 class GunicornDeploy(object):
@@ -38,3 +38,7 @@ class GunicornDeploy(object):
                               destination="/etc/init.d/gunicorn_django",
                               use_sudo=True)
         sudo('chmod +x /etc/init.d/gunicorn_django')
+
+    def status(self):
+        host = "{0}:{1}".format(env.host_string, env.gunicorn_port)
+        http_status(host=env.host_string, port=env.gunicorn_port,  name='Gunicorn')

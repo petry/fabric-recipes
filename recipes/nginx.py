@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+from fabric.colors import green, red
 from fabric.contrib import files
-from fabric.operations import sudo
+from fabric.operations import sudo, local
 from fabric.state import env
 from recipes import scripts
 from recipes.gunicorn import GunicornDeploy
-from recipes.utils import puts, install_packages, restart_service, required_envs
+from recipes.utils import puts, install_packages, restart_service, required_envs, http_status
 
 
 class NginxDeploy(object):
@@ -50,3 +51,10 @@ class NginxDeploy(object):
                               context=env,
                               use_sudo=True)
         restart_service('nginx')
+
+
+    def status(self):
+        host = env.host_string
+        http_status(host=host, port="80", name='NGIX', run_local=True)
+
+        self.gunicorn.status()

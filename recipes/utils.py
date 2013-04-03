@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from fabric.colors import red
+from fabric.colors import red, green
 from fabric.context_managers import settings
 from fabric.api import sudo
 from fabric.api import puts as fabric_puts
 from fabric import colors
+from fabric.operations import local, run
 from fabric.state import env
 from fabric.utils import error
 
@@ -56,3 +57,16 @@ def required_envs(env_list):
             message += " - {0}\n".format(var)
 
         error(red(message))
+
+
+def http_status(host, port="80", name="", run_local=False):
+    if run_local:
+        url = "{0}:{1}".format(host, port)
+        status = local("curl -o /dev/null --silent --head --write-out '%{http_code}' " + url, capture=True)
+    else:
+        url = "127.0.0.1:{0}".format(port)
+        status = run("curl -o /dev/null --silent --head --write-out '%{http_code}' " + url)
+    if status == '200':
+        print(name + " " + green('OK'))
+    else:
+        print(name + " " + red('FAIL'))
