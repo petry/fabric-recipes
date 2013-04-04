@@ -2,3 +2,4 @@
 fabric_django.egg-info/
 *.pyc
 .vagrant
+fabric_recipes.egg-info
