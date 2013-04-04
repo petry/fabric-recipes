@@ -3,9 +3,7 @@
 from fabric.api import env
 from fabric.operations import run
 from recipes.gunicorn import GunicornDeploy
-from recipes.nginx import NginxDeploy
-from recipes.utils import server_upgrade, puts, install_packages, required_envs
-from recipes.project import ProjectDeploy
+from recipes.utils import puts, required_envs
 
 
 class DjangoDeploy(object):
@@ -15,27 +13,15 @@ class DjangoDeploy(object):
             'host_string'
         ])
 
-        self.project = ProjectDeploy()
-        self.nginx = NginxDeploy()
+        self.gunicorn = GunicornDeploy(release_path=env.remote_release_path)
 
     def setup(self):
-        puts("setup new project...")
-        install_packages(
-            [
-                'git-core',
-                'python-virtualenv'
-            ]
-        )
-        server_upgrade()
-        self.nginx.setup_server()
-
-        self.deploy()
+        self.gunicorn.setup()
 
     def deploy(self):
         puts("Deploying Project...")
-        self.project.deploy()
         self.collect_static()
-        self.nginx.setup_site()
+        self.gunicorn.deploy()
 
     def collect_static(self):
         puts("Collecting static files")
@@ -43,4 +29,4 @@ class DjangoDeploy(object):
                                                                           env.remote_current_path))
 
     def status(self):
-        self.nginx.status()
+        self.gunicorn.status()

@@ -9,7 +9,6 @@ from fabric.state import env
 from fabric.utils import error
 
 
-
 def puts(msg, m_type='info'):
     messages_by_type = {
         'info': colors.blue(msg),
@@ -23,13 +22,13 @@ def puts(msg, m_type='info'):
 
 def install_packages(packages):
     with settings(warn_only=True):
-        sudo("aptitude -y install %s" % (' '.join(packages),))
+        sudo("apt-get -qqy install %s" % (' '.join(packages),))
 
 
 def server_upgrade():
     puts('updating server')
     with settings(warn_only=True):
-        sudo("aptitude -y update")
+        sudo("apt-get -qqy update")
         # sudo("aptitude -y upgrade")
 
 

@@ -7,13 +7,15 @@ from fabric.context_managers import cd
 from fabric.contrib import files
 from fabric.operations import local, run, put
 from fabric.state import env
-from recipes.utils import create_directories, required_envs
+from recipes.django import DjangoDeploy
+from recipes.utils import create_directories, required_envs, server_upgrade, install_packages, puts
 
 
 class ProjectDeploy(object):
     def __init__(self):
-        super(ProjectDeploy, self).__init__()
         self.release_path = None
+
+        self.django = DjangoDeploy()
         
         required_envs([
             'project_name',
@@ -60,6 +62,12 @@ class ProjectDeploy(object):
         run("{0}/bin/pip install -r {1}/requirements.txt".format(env.remote_virtualenv_path, self.release_path))
 
     def create_python_enviroment(self):
+        install_packages(
+            [
+                'python-virtualenv'
+            ]
+        )
+
         virtualenv_bin_file = join(env.remote_virtualenv_path, "bin/activate")
         if not files.exists(virtualenv_bin_file):
             create_directories(env.remote_virtualenv_path, env.user, '0750')
@@ -70,3 +78,15 @@ class ProjectDeploy(object):
         self.create_python_enviroment()
         self.upload()
         self.install_pip_dependancies()
+        self.django.deploy()
+
+    def setup(self):
+        puts("setup new project...")
+        server_upgrade()
+        install_packages(
+            [
+                'git-core',
+            ]
+        )
+        self.django.setup()
+        self.deploy()
