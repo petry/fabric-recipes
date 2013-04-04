@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name="fabric-recipes",
-    version="0.1",
+    version="0.2",
     author="Marcos Daniel Petry",
     author_email="marcospetry@gmail.com",
     description=("quick solution to perform deploy a Django app using nginx and gunicorn"),
