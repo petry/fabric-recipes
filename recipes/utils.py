@@ -1,11 +1,13 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from os.path import join
 from fabric.colors import red, green
 from fabric.context_managers import settings
 from fabric.api import sudo
 from fabric.api import puts as fabric_puts
 from fabric import colors
 from fabric.operations import local, run
-from fabric.state import env
+from recipes import env
 from fabric.utils import error
 
 
@@ -22,13 +24,13 @@ def puts(msg, m_type='info'):
 
 def install_packages(packages):
     with settings(warn_only=True):
-        sudo("apt-get -qqy install %s" % (' '.join(packages),))
+        sudo("apt-get install %s -qqy " % (' '.join(packages),))
 
 
 def server_upgrade():
     puts('updating server')
     with settings(warn_only=True):
-        sudo("apt-get -qqy update")
+        sudo("apt-get update -qqy")
         # sudo("aptitude -y upgrade")
 
 

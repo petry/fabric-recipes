@@ -3,7 +3,7 @@
 import os
 from fabric.contrib import files
 from fabric.operations import sudo
-from fabric.state import env
+from recipes import env
 from recipes import scripts
 from recipes.utils import puts, install_packages, restart_service, required_envs, http_status
 

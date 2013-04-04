@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from fabric.api import env
 from fabric.operations import run
+from recipes import env
 from recipes.gunicorn import GunicornDeploy
 from recipes.utils import puts, required_envs
 
@@ -19,7 +19,7 @@ class DjangoDeploy(object):
         self.gunicorn.setup()
 
     def deploy(self):
-        puts("Deploying Project...")
+        puts("running django deploy")
         self.collect_static()
         self.gunicorn.deploy()
 
