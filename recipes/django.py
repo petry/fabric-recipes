@@ -15,8 +15,6 @@ class DjangoDeploy(object):
 
         self.gunicorn = GunicornDeploy(release_path=env.remote_release_path)
 
-    def setup(self):
-        self.gunicorn.setup()
 
     def deploy(self):
         puts("running django deploy")

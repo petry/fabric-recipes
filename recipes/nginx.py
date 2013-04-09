@@ -30,9 +30,13 @@ class NginxDeploy(object):
         files.upload_template(filename=config_file,
                               destination="/etc/nginx/nginx.conf",
                               use_sudo=True)
-        restart_service('nginx')
 
     def setup_site(self, config_file=None):
+        if not files.exists('/etc/init.d/nginx'):
+            puts('nginx not found, running setup', m_type='warn')
+            self.setup_server()
+
+
         puts('adding HTTP Server config files for project')
         if not config_file:
             config_file = os.path.join(scripts.__path__[0], 'nginx_site.conf')

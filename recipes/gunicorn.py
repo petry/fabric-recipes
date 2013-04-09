@@ -6,7 +6,7 @@ from fabric.operations import sudo
 from recipes import env
 from recipes import scripts
 from recipes.nginx import NginxDeploy
-from recipes.utils import puts, required_envs, http_status, install_packages
+from recipes.utils import puts, required_envs, http_status, install_packages, restart_service
 
 
 class GunicornDeploy(object):
@@ -22,6 +22,10 @@ class GunicornDeploy(object):
         ])
 
     def deploy(self, config_file=None):
+        if not files.exists('/etc/init.d/gunicorn'):
+            puts('gunicorn init script not found, running setup', m_type='warn')
+            self.setup()
+
         puts('transferring gunicorn configurarion and restart')
         if not config_file:
             config_file = os.path.join(scripts.__path__[0], 'gunicorn_project.conf')
@@ -31,14 +35,14 @@ class GunicornDeploy(object):
                               context=env,
                               backup=False,
                               use_sudo=True)
-        sudo('/etc/init.d/gunicorn restart %s' % env.project_name, pty=False)
+        restart_service('gunicorn')
         self.nginx.setup_site()
 
-    def setup(self, config_file=None):
+    def setup(self):
+        puts('Installing Gunicorn')
         install_packages([
             'gunicorn=0.13.4-1',
         ])
-        self.nginx.setup_server()
 
     def status(self):
         http_status(host=env.host_string, port=env.gunicorn_port,  name='Gunicorn')

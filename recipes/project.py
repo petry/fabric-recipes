@@ -73,6 +73,10 @@ class ProjectDeploy(object):
             sudo('ln -s /usr/lib/`uname -i`-linux-gnu/libz.so /usr/lib/')
 
     def deploy(self):
+        if not files.exists('/usr/bin/git'):
+            puts('new fresh server :D', m_type='warn')
+            self.setup()
+
         puts("deploying your project")
         self.create_folder()
         self.create_python_enviroment()
@@ -91,7 +95,6 @@ class ProjectDeploy(object):
                 'curl',
             ]
         )
-        self.django.setup()
 
     def status(self):
         self.django.status()
