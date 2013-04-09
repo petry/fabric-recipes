@@ -25,7 +25,7 @@ for package in core_packages:
 
 setup(
     name="fabric-recipes",
-    version="0.2",
+    version="0.3",
     author="Marcos Daniel Petry",
     author_email="marcospetry@gmail.com",
     description=("quick solution to perform deploy a Django app using nginx and gunicorn"),

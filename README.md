@@ -21,7 +21,13 @@ If you like, change some fabric variables such as `env.user` and `env.password` 
 then, run the commands to deploy your app on your server:
 
 ```bash
-$ fab setup deploy status
+$ fab deploy
+```
+
+and this command to check if everything is working
+
+```bash
+$ fab status
 ```
 
 or 
