@@ -6,7 +6,7 @@ from fabric.operations import sudo
 from recipes import env
 from recipes import scripts
 from recipes.nginx import NginxDeploy
-from recipes.utils import puts, required_envs, http_status
+from recipes.utils import puts, required_envs, http_status, install_packages
 
 
 class GunicornDeploy(object):
@@ -35,13 +35,9 @@ class GunicornDeploy(object):
         self.nginx.setup_site()
 
     def setup(self, config_file=None):
-        # puts('Add Gunicorn init script')
-        # if not config_file:
-        #     config_file = os.path.join(scripts.__path__[0], 'gunicorn_django_server')
-        # files.upload_template(filename=config_file,
-        #                       destination="/etc/init.d/gunicorn_django",
-        #                       use_sudo=True)
-        # sudo('chmod +x /etc/init.d/gunicorn_django')
+        install_packages([
+            'gunicorn',
+        ])
         self.nginx.setup_server()
 
     def status(self):
