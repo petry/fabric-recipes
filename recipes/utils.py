@@ -24,13 +24,13 @@ def puts(msg, m_type='info'):
 
 def install_packages(packages):
     with settings(warn_only=True):
-        sudo("apt-get install %s -qqy " % (' '.join(packages),))
+        sudo("apt-get install %s -qy " % (' '.join(packages),))
 
 
 def server_upgrade():
     puts('updating server')
     with settings(warn_only=True):
-        sudo("apt-get update -qqy")
+        sudo("apt-get update -qy")
         # sudo("aptitude -y upgrade")
 
 
