@@ -24,23 +24,24 @@ class GunicornDeploy(object):
     def deploy(self, config_file=None):
         puts('transferring gunicorn configurarion and restart')
         if not config_file:
-            config_file = os.path.join(scripts.__path__[0], 'gunicorn_django_site')
+            config_file = os.path.join(scripts.__path__[0], 'gunicorn_project.conf')
 
         files.upload_template(filename=config_file,
-                              destination="/etc/default/gunicorn_django-%s" % env.project_name,
+                              destination="/etc/gunicorn.d/%s" % env.project_name,
                               context=env,
+                              backup=False,
                               use_sudo=True)
-        sudo('/etc/init.d/gunicorn_django restart %s' % env.project_name, pty=False)
+        sudo('/etc/init.d/gunicorn restart %s' % env.project_name, pty=False)
         self.nginx.setup_site()
 
     def setup(self, config_file=None):
-        puts('Add Gunicorn init script')
-        if not config_file:
-            config_file = os.path.join(scripts.__path__[0], 'gunicorn_django_server')
-        files.upload_template(filename=config_file,
-                              destination="/etc/init.d/gunicorn_django",
-                              use_sudo=True)
-        sudo('chmod +x /etc/init.d/gunicorn_django')
+        # puts('Add Gunicorn init script')
+        # if not config_file:
+        #     config_file = os.path.join(scripts.__path__[0], 'gunicorn_django_server')
+        # files.upload_template(filename=config_file,
+        #                       destination="/etc/init.d/gunicorn_django",
+        #                       use_sudo=True)
+        # sudo('chmod +x /etc/init.d/gunicorn_django')
         self.nginx.setup_server()
 
     def status(self):
