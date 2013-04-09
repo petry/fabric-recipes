@@ -36,7 +36,7 @@ class GunicornDeploy(object):
 
     def setup(self, config_file=None):
         install_packages([
-            'gunicorn',
+            'gunicorn=0.13.4-1',
         ])
         self.nginx.setup_server()
 
